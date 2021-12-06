@@ -21,13 +21,12 @@ for i, row in enumerate(f_content.split("\n")):
         curr_board = []
 
 # cast to np so we can work with arrays easier
-bingo_boards = bingo_boards[:2]  # TODO: Remove debug !!!
 bingo_boards = np.array(bingo_boards)
-
-#print(bingo_boards)
 
 # initialize grid with zeros, which we will use to mark numbers (as 1)
 answer_boards = np.zeros(shape=(len(bingo_boards), 5, 5), dtype=int)
+
+# task 1
 
 # run through random numbers:
 # search for number across the boards, and keep indexes
@@ -36,8 +35,64 @@ answer_boards = np.zeros(shape=(len(bingo_boards), 5, 5), dtype=int)
 # find the first board with the 5 consecutive 1's
 # sum up all values in that board where mask-values are 0
 
+# last_no = None
+# last_idx = None
+# is_win = False
+# winning_board = None
+# winning_board_idx = 0
+#
+# for i, curr_no in enumerate(rand_numbers):
+#     # create a mask for indexes where number was found
+#     mask = bingo_boards[:, :, :] == curr_no
+#     # populate answers
+#     answer_boards[mask] = 1
+#     # search all boards and find the first one which has 5 ones
+#     # across all cols or rows
+#     for j, b in enumerate(answer_boards):
+#         col_sum = np.sum(b, axis=(0,))
+#         row_sum = np.sum(b, axis=(1,))
+#         if 5 in col_sum or 5 in row_sum:
+#             is_win = True
+#             last_no = curr_no
+#             winning_board_idx = j
+#     if is_win:
+#         break
+#
+# # make sure index was found
+# assert winning_board_idx != 0
+#
+# # create a mask for unmarked numbers in winning board
+# winning_board = answer_boards[winning_board_idx]
+# unmarked_board_mask = (winning_board == 0)
+#
+# # sum all unmarked numbers in the standard board
+# sum_unmarked = np.sum(bingo_boards[winning_board_idx][unmarked_board_mask])
+#
+# print("last number", last_no)
+# print("winning_board")
+# print(winning_board)
+# print("unmarked mask")
+# print(unmarked_board_mask)
+# print("sum unmarked", sum_unmarked)
+#
+#
+# print("final score", last_no*sum_unmarked)
+
+# task 2
+
+# run through random numbers:
+# search for number across the boards, and keep indexes
+# populate 1's on the mask for selected indexes
+# find consecutive rows or columns with 1's - if found mark board as already won,
+# then keep going until we find the last winning board
+
 last_no = None
 last_idx = None
+is_win = False
+winning_board = None
+winning_board_idx = 0
+
+winning_boards_indexes = []
 
 for i, curr_no in enumerate(rand_numbers):
     # create a mask for indexes where number was found
@@ -46,29 +101,33 @@ for i, curr_no in enumerate(rand_numbers):
     answer_boards[mask] = 1
     # search all boards and find the first one which has 5 ones
     # across all cols or rows
-    for b in answer_boards:
+    for j, b in enumerate(answer_boards):
+        if j in winning_boards_indexes:
+            continue
         col_sum = np.sum(b, axis=(0,))
         row_sum = np.sum(b, axis=(1,))
+        if 5 in col_sum or 5 in row_sum:
+            is_win = True
+            last_no = curr_no
+            winning_board_idx = j
+            winning_board = b.copy()
+            winning_boards_indexes.append(j)
 
+# make sure index was found
+assert winning_board_idx != 0
 
-    # sum values across columns
-    # col_sum = np.sum(answer_boards, axis=(1,))
-    # # count number of occurrences for 5
-    # unique, counts = np.unique(col_sum, return_counts=True)
-    # counts_dict = dict(zip(unique, counts))
+# create a mask for unmarked numbers in winning board
+unmarked_board_mask = (winning_board == 0)
 
+# sum all unmarked numbers in the standard board
+sum_unmarked = np.sum(bingo_boards[winning_board_idx][unmarked_board_mask])
 
-# print("last no", last_no, "last idx", last_idx, "multiply",
-#       last_no * sum(rand_numbers[last_idx+1:]))
+print("winning_board_idx", winning_board_idx)
+print("last number", last_no)
+print("winning_board")
+print(winning_board)
+print("unmarked mask")
+print(unmarked_board_mask)
+print("sum unmarked", sum_unmarked)
 
-my_arr = np.array(
-    [
-        [0, 1],
-        [0, 1]
-    ]
-)
-print(my_arr)
-print("COLS:")
-print(np.sum(my_arr, axis=(0,)))
-print("ROWS:")
-print(np.sum(my_arr, axis=(1,)))
+print("final score", last_no*sum_unmarked)
