@@ -3,10 +3,13 @@ from lib import read_file
 f_content = read_file("./inputs/day06.txt", ret_raw=True)
 curr_lanterns = [int(n) for n in f_content.split(",")]
 
-# n_days = 80  # task 1
-n_days = 256  # task 2
+# task 1 (task 2 seems to be impossible at the moment, perhaps need some sleep first ;D)
+
+n_days = 80
 spawn_time = 6
 new_lantern_time = 8
+
+spawned_lanterns_counter = 0
 
 for i, _ in enumerate(range(n_days)):
     if i != 0 and i % 10 == 0:
@@ -26,3 +29,4 @@ for i, _ in enumerate(range(n_days)):
 
 print("Done")
 print(len(curr_lanterns))
+
